@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <title>XHYVC2 — Living off the Land C2</title>
+  <style>
+    :root {
+      --bg:        #0b0d0f;
+      --surface:   #111418;
+      --surface2:  #181c21;
+      --surface3:  #1e232a;
+      --border:    #252b34;
+      --border2:   #2e3542;
+      --accent:    #00d4ff;
+      --accent2:   #0099bb;
+      --accent-dim:#00d4ff22;
+      --red:       #ff4d6a;
+      --green:     #00e096;
+      --yellow:    #ffc107;
+      --purple:    #a78bfa;
+      --text:      #c9d1db;
+      --text2:     #8892a0;
+      --text3:     #555f6e;
+      --white:     #eef2f7;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 2rem 1.5rem;
+      position: relative;
+    }
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .logo-mark {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-shadow: 0 0 30px var(--accent2);
+      flex-shrink: 0;
+    }
+    .logo-mark span { color: var(--text3); font-weight: 400; }
+    .header-text h1 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .header-text p {
+      font-size: 0.82rem;
+      color: var(--text2);
+      margin-top: 0.2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .header-stats {
+      margin-left: auto;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .hstat {
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .hstat-num {
+      display: block;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .hstat-label {
+      font-size: 0.65rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-search {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-search input {
+      width: 100%;
+      padding: 0.55rem 0.85rem;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .sidebar-search input:focus {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+    .sidebar-search input::placeholder { color: var(--text3); }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+    }
+    .sidebar-list::-webkit-scrollbar { width: 4px; }
+    .sidebar-list::-webkit-scrollbar-track { background: transparent; }
+    .sidebar-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      transition: background 0.12s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar-item:hover { background: var(--surface2); }
+    .sidebar-item.active {
+      background: var(--accent-dim);
+      border-left-color: var(--accent);
+    }
+    .sidebar-item.hidden { display: none; }
+    .sidebar-icon {
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      background: var(--surface3);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .sidebar-icon img {
+      width: 18px; height: 18px;
+      object-fit: contain;
+      filter: brightness(0.85);
+    }
+    .sidebar-icon-fb {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+    }
+    .sidebar-label {
+      font-size: 0.83rem;
+      color: var(--text);
+      font-weight: 500;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sidebar-count {
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text3);
+      background: var(--surface3);
+      padding: 0.1rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    /* ── Main Content ── */
+    .main-content {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      overflow-x: hidden;
+    }
+
+    /* ── Home Panel ── */
+    #homePanel { }
+
+    .panel-heading {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+    }
+    .tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.1rem 0.75rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 120px;
+    }
+    .tile:hover {
+      border-color: var(--accent2);
+      background: var(--surface2);
+      transform: translateY(-2px);
+    }
+    .tile.hidden { display: none; }
+    .tile img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 0.5rem; opacity: 0.85; }
+    .tile-text {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text2);
+      text-transform: capitalize;
+      line-height: 1.3;
+    }
+    .fallback-icon {
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── Detail Panel ── */
+    #detailPanel { display: none; }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-header-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .detail-header-icon img { width: 32px; height: 32px; object-fit: contain; }
+    .detail-header-fb {
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+    }
+    .detail-header-info h2 {
+      font-size: 1.3rem; font-weight: 600;
+      color: var(--white);
+      text-transform: capitalize;
+    }
+    .detail-header-info p {
+      font-size: 0.8rem;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .detail-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn {
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      color: var(--text2);
+      transition: all 0.15s;
+    }
+    .btn:hover { background: var(--surface3); color: var(--white); border-color: var(--accent2); }
+    .btn.copied { background: #00e09622; border-color: var(--green); color: var(--green); }
+
+    /* ── Stats Row ── */
+    .stats-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .stat-card .snum {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+    .stat-card .slabel {
+      font-size: 0.72rem;
+      color: var(--text3);
+    }
+    .stat-card .sicon { font-size: 1.1rem; }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s;
+    }
+    .section-header:hover { background: var(--surface3); }
+    .section-header .sec-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--white);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .section-header .sec-count {
+      margin-left: auto;
+      font-size: 0.68rem;
+      background: var(--surface3);
+      color: var(--text3);
+      padding: 0.1rem 0.45rem;
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .section-header .chevron {
+      font-size: 0.6rem;
+      color: var(--text3);
+      transition: transform 0.2s;
+      margin-left: 0.3rem;
+    }
+    .section-header.collapsed .chevron { transform: rotate(-90deg); }
+    .section-body.collapsed { display: none; }
+
+    /* ── Projects ── */
+    .project-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 1rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-item:hover { background: var(--surface2); }
+    .project-item a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.83rem;
+      font-family: 'JetBrains Mono', monospace;
+      word-break: break-all;
+    }
+    .project-item a:hover { text-decoration: underline; }
+
+    /* ── Detection Items ── */
+    .detection-group-title {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 1rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .detection-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem 0.5rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.83rem;
+    }
+    .detection-item:last-child { border-bottom: none; }
+    .det-tag {
+      flex-shrink: 0;
+      font-size: 0.58rem;
+      font-weight: 700;
+      padding: 0.12rem 0.35rem;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 0.15rem;
+    }
+    .det-tag.tag-url     { background: #00d4ff18; color: var(--accent); border: 1px solid #00d4ff33; }
+    .det-tag.tag-ua      { background: #ff4d6a18; color: var(--red);    border: 1px solid #ff4d6a33; }
+    .det-tag.tag-file    { background: #ffc10718; color: var(--yellow);  border: 1px solid #ffc10733; }
+    .det-tag.tag-process { background: #a78bfa18; color: var(--purple);  border: 1px solid #a78bfa33; }
+    .det-tag.tag-logic   { background: #00e09618; color: var(--green);   border: 1px solid #00e09633; }
+    .det-tag.tag-ref     { background: var(--surface3); color: var(--text3); border: 1px solid var(--border2); }
+    .det-tag.tag-other   { background: var(--surface3); color: var(--text3); border: 1px solid var(--border2); }
+    .det-tool {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.08rem 0.3rem;
+      border-radius: 3px;
+      background: var(--surface3);
+      color: var(--text2);
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+    .det-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      word-break: break-all;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .det-text {
+      font-size: 0.82rem;
+      word-break: break-word;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .det-value a, .det-text a { color: var(--accent); text-decoration: none; }
+    .det-value a:hover, .det-text a:hover { text-decoration: underline; }
+
+    .http-method {
+      display: inline-block;
+      font-size: 0.58rem; font-weight: 700;
+      padding: 0.08rem 0.28rem; border-radius: 2px;
+      margin-right: 0.2rem;
+      font-family: 'JetBrains Mono', monospace;
+      vertical-align: middle;
+    }
+    .http-get    { background: #00e09618; color: var(--green);  border: 1px solid #00e09633; }
+    .http-post   { background: #00d4ff18; color: var(--accent); border: 1px solid #00d4ff33; }
+    .http-put    { background: #ffc10718; color: var(--yellow);  border: 1px solid #ffc10733; }
+    .http-delete { background: #ff4d6a18; color: var(--red);    border: 1px solid #ff4d6a33; }
+    .http-head   { background: #a78bfa18; color: var(--purple);  border: 1px solid #a78bfa33; }
+    .http-other  { background: var(--surface3); color: var(--text3); border: 1px solid var(--border2); }
+
+    /* ── Description ── */
+    .desc-section {
+      padding: 1.1rem;
+      font-size: 0.88rem;
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .desc-section h1,.desc-section h2,.desc-section h3,
+    .desc-section h4,.desc-section h5,.desc-section h6 {
+      margin: 1.1rem 0 0.45rem;
+      color: var(--white); font-weight: 600;
+    }
+    .desc-section p { margin: 0.45rem 0; }
+    .desc-section img {
+      max-width: 100%; height: auto; border-radius: 6px;
+      margin: 0.65rem 0;
+      border: 1px solid var(--border);
+    }
+    .desc-section a { color: var(--accent); }
+    .desc-section a:hover { text-decoration: underline; }
+    .desc-section ul,.desc-section ol { margin: 0.4rem 0 0.4rem 1.4rem; }
+    .desc-section li { margin: 0.2rem 0; }
+    .desc-section code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      background: var(--surface3);
+      color: var(--accent);
+      padding: 0.12rem 0.32rem;
+      border-radius: 3px;
+    }
+    .desc-section pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.9rem;
+      margin: 0.65rem 0;
+      overflow-x: auto;
+    }
+    .desc-section pre code { background: none; padding: 0; color: var(--text); }
+    .desc-section blockquote {
+      border-left: 3px solid var(--accent2);
+      padding: 0.4rem 0.9rem;
+      margin: 0.65rem 0;
+      color: var(--text2);
+      background: var(--surface2);
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* ── Back button ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text3);
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 1rem 2rem;
+      font-size: 0.72rem;
+      color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+    }
+
+    /* ── Scrollbar global ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 220px; }
+      .header-stats { display: none; }
+    }
+    @media (max-width: 700px) {
+      .layout { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      .sidebar-list { max-height: 200px; }
+      .main-content { padding: 1rem; }
+      .tile-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-mark">XHYVC2<span>_</span></div>
+    <div class="header-text">
+      <h1>Living off the Land C2</h1>
+      <p>// C2 frameworks abusing legitimate services to evade detection</p>
+    </div>
+    <div class="header-stats" id="headerStats">
+      <div class="hstat">
+        <span class="hstat-num" id="hstatServices">—</span>
+        <span class="hstat-label">Services</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num" id="hstatProjects">—</span>
+        <span class="hstat-label">C2 Projects</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num" id="hstatRules">—</span>
+        <span class="hstat-label">Detection Rules</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-search">
+      <input type="text" id="searchInput" placeholder="filter services..." autocomplete="off">
+    </div>
+    <div class="sidebar-list" id="sidebarList"></div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <div id="homePanel">
+      <div class="panel-heading">All Services — <span id="tileCount">0</span> indexed</div>
+      <div class="tile-grid" id="tileGrid"></div>
+    </div>
+
+    <div id="detailPanel">
+      <div class="back-link" onclick="goBack()">&#8592; back to index</div>
+
+      <div class="detail-header">
+        <div class="detail-header-icon" id="detailIconContainer"></div>
+        <div class="detail-header-info">
+          <h2 id="detailTitle"></h2>
+          <p id="detailSubtitle"></p>
+        </div>
+        <div class="detail-actions">
+          <button class="btn copy-link-btn" onclick="copyShareLink()">&#128279; copy link</button>
+          <button class="btn" onclick="goBack()">&#8592; back</button>
+        </div>
+      </div>
+
+      <div class="stats-row" id="statsRow"></div>
+      <div id="detailContent"></div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  xhyvc2 — a catalogue of C2 frameworks leveraging legitimate third-party services
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+  let c2Data = {};
+
+  const serviceIcons = {
+    "telegram":                          "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg",
+    "twitter":                           "https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg",
+    "gmail":                             "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg",
+    "slack":                             "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg",
+    "discord":                           "https://upload.wikimedia.org/wikipedia/fr/4/4f/Discord_Logo_sans_texte.svg",
+    "google Sheet":                      "https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg",
+    "google Drive":                      "https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg",
+    "google Calendar":                   "https://upload.wikimedia.org/wikipedia/commons/a/a2/Google_Calendar_icon_%282015-2020%29.svg",
+    "google Slides":                     "https://upload.wikimedia.org/wikipedia/commons/1/16/Google_Slides_2020_Logo.svg",
+    "Google Translate":                  "https://upload.wikimedia.org/wikipedia/commons/d/d7/Google_Translate_logo.svg",
+    "github":                            "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
+    "youtube":                           "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
+    "pastebin":                          "https://upload.wikimedia.org/wikipedia/commons/d/d5/Pastebin_logo.png",
+    "Pastebin":                          "https://upload.wikimedia.org/wikipedia/commons/d/d5/Pastebin_logo.png",
+    "reddit":                            "https://upload.wikimedia.org/wikipedia/commons/b/b4/Reddit_logo.svg",
+    "cloudflare":                        "https://upload.wikimedia.org/wikipedia/commons/9/94/Cloudflare_Logo.png",
+    "dropbox":                           "https://upload.wikimedia.org/wikipedia/commons/7/78/Dropbox_Icon.svg",
+    "Dropbox":                           "https://upload.wikimedia.org/wikipedia/commons/7/78/Dropbox_Icon.svg",
+    "instagram":                         "https://upload.wikimedia.org/wikipedia/commons/9/95/Instagram_logo_2022.svg",
+    "zoom":                              "https://upload.wikimedia.org/wikipedia/commons/2/24/Zoom-Logo.png",
+    "virustotal":                        "https://avatars.githubusercontent.com/u/7701252",
+    "zulip":                             "https://upload.wikimedia.org/wikipedia/commons/3/39/Zulip-icon-square.svg",
+    "mastodon":                          "https://upload.wikimedia.org/wikipedia/commons/d/d5/Mastodon_logotype_%28simple%29_new_hue.svg",
+    "notion":                            "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",
+    "Notion":                            "https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png",
+    "matrix":                            "https://upload.wikimedia.org/wikipedia/commons/7/7c/Matrix_icon.svg",
+    "openai":                            "https://upload.wikimedia.org/wikipedia/commons/a/a4/GPT-4.png",
+    "claude":                            "https://upload.wikimedia.org/wikipedia/commons/8/8a/Claude_AI_logo.svg",
+    "soundcloud":                        "https://upload.wikimedia.org/wikipedia/commons/a/a2/Antu_soundcloud.svg",
+    "spotify":                           "https://upload.wikimedia.org/wikipedia/commons/5/54/2024_Spotify_logo_without_text.svg",
+    "FireBase":                          "doc/firebase.png",
+    "Microsoft Printer":                 "doc/microsoft_printer.png",
+    "Microsoft Power Automate":          "https://upload.wikimedia.org/wikipedia/commons/4/4d/Microsoft_Power_Automate.svg",
+    "Microsoft Teams":                   "doc/Teams_icon.png",
+    "Microsoft Tasks":                   "https://upload.wikimedia.org/wikipedia/commons/6/6e/Microsoft_To-Do_icon.svg",
+    "Microsoft outlook":                 "https://upload.wikimedia.org/wikipedia/commons/f/f7/Microsoft_Outlook_2013-2019_logo.svg",
+    "Microsoft Sharepoint":              "doc/sharepoint_icon.svg",
+    "Microsoft Graph":                   "https://learn.microsoft.com/pt-br/graph/images/hub/icon04-graphtoolkit.svg",
+    "Microsoft Azure Functions":         "doc/azure-functions-logo.png",
+    "Microsoft Azure Application Proxy": "doc/entraid_appproxypng.png",
+    "Microsoft Azure Blob Storage":      "doc/azure-blob-storage-color.svg",
+    "Microsoft OneDrive":                "doc/onedrive_icon.png",
+    "splunk":                            "https://upload.wikimedia.org/wikipedia/commons/f/f8/Splunk_logo.png",
+    "lichess":                           "https://upload.wikimedia.org/wikipedia/commons/d/da/Lichess_Logo_2019.svg",
+    "chess.com":                         "doc/chesscom_logo.png",
+    "asana":                             "https://upload.wikimedia.org/wikipedia/commons/archive/3/3b/20220310194314%21Asana_logo.svg",
+    "jira":                              "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Jira_Logo.svg/1920px-Jira_Logo.svg.png",
+    "mattermost":                        "https://avatars.githubusercontent.com/u/9828093",
+    "onedrive":                          "doc/onedrive_icon.png",
+    "cisco webex":                       "https://avatars.githubusercontent.com/u/15900782",
+    "DuckDuckGO":                        "https://upload.wikimedia.org/wikipedia/en/8/88/DuckDuckGo_logo.svg",
+    "CounterStrike 1.6":                 "https://upload.wikimedia.org/wikipedia/pt/6/67/Counter-Strike_Box.jpg",
+    "whatsapp":                          "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
+    "x":                                 "https://upload.wikimedia.org/wikipedia/commons/2/2d/Twitter_X.png",
+    "Strava":                            "doc/strava.svg",
+    "Wi-Fi Beacons":                     "https://upload.wikimedia.org/wikipedia/commons/a/ae/WiFi_Logo.svg",
+    "AWS X-Ray":                         "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
+    "Trello":                            "https://upload.wikimedia.org/wikipedia/en/8/8c/Trello_logo.svg",
+    "Blockchain Smart Contracts":        "https://upload.wikimedia.org/wikipedia/commons/6/6f/Ethereum-icon-purple.svg",
+    "Slack":                             "https://upload.wikimedia.org/wikipedia/commons/d/d5/Slack_icon_2019.svg"
+  };
+
+  /* ═══════════════ DETECTION CLASSIFIER ═══════════════ */
+  function classifyDetection(raw) {
+    const s = raw.trim();
+    const lower = s.toLowerCase();
+    let tool = null;
+    const toolMatch = s.match(/^\[([^\]]+)\]\s*/);
+    if (toolMatch) tool = toolMatch[1];
+    let clean = toolMatch ? s.slice(toolMatch[0].length) : s;
+
+    if (/^(detection blog|blog|source|detection patterns)[:\s]/i.test(clean) ||
+        (/^https?:\/\//i.test(clean) && !/(api\.|graph\.|\\.com\/api|\\.com\/v[0-9]|blob\.core|\\.net\/api)/i.test(clean) && /(blog|medium|research|github\.com\/mthcht|x\.com\/)/i.test(clean))) {
+      const urlMatch = clean.match(/(https?:\/\/[^\s]+)/);
+      return { type: 'reference', tool, value: clean, url: urlMatch ? urlMatch[1] : null };
+    }
+    if (/^(detection (strategy|logic)|comment)[:\s]/i.test(clean) ||
+        /^(high-frequency|unusual |repeated |anomalous |rare |excessive |presence of )/i.test(clean) ||
+        /^(base64 payloads)/i.test(clean)) {
+      return { type: 'logic', tool, value: clean.replace(/^(detection (strategy|logic)|comment)[:\s]*/i, '') };
+    }
+    if (/user-?agent/i.test(lower)) {
+      const uaMatch = clean.match(/user-?agent[:\s]*(.+)/i);
+      return { type: 'useragent', tool, value: uaMatch ? uaMatch[1].trim() : clean };
+    }
+    if (/^file (created|name)[:\s]/i.test(clean) || /^file[:\s]/i.test(clean) ||
+        (tool && /\bfile\b/i.test(clean) && !/https?:\/\//i.test(clean))) {
+      return { type: 'file', tool, value: clean.replace(/^file[:\s]*/i, '') };
+    }
+    if (/^process\s*[-:]/i.test(clean)) {
+      return { type: 'process', tool, value: clean.replace(/^process\s*[-:\s]*/i, '') };
+    }
+    const multiMethodMatch = clean.match(/^((?:GET|POST|PUT|DELETE|HEAD|PATCH)\s*(?:&\s*(?:GET|POST|PUT|DELETE|HEAD|PATCH)\s*)*)[-\s]*[-:]\s*/i);
+    let method = null, urlClean = clean;
+    if (multiMethodMatch) {
+      method = multiMethodMatch[1].replace(/\s+/g, '').toUpperCase();
+      urlClean = clean.slice(multiMethodMatch[0].length);
+    }
+    if (/^url[:\s]+/i.test(urlClean)) urlClean = urlClean.replace(/^url[:\s]+/i, '').trim();
+    if (/^https?:\/\//i.test(urlClean) || /^\*[.\/:]/.test(urlClean) || /^url[:\s]/i.test(clean)) {
+      return { type: 'network', tool, method, value: urlClean };
+    }
+    if (/https?:\/\//i.test(clean)) return { type: 'network', tool, method, value: urlClean };
+    return { type: 'other', tool, value: clean };
+  }
+
+  function renderMethodPill(method) {
+    if (!method) return '';
+    return method.split('&').map(m => {
+      const cls = { 'GET':'http-get','POST':'http-post','PUT':'http-put','DELETE':'http-delete','HEAD':'http-head','PATCH':'http-other' }[m] || 'http-other';
+      return `<span class="http-method ${cls}">${m}</span>`;
+    }).join('');
+  }
+
+  const TYPE_META = {
+    network:   { label: 'Network Indicators', icon: '⬡', tag: 'URL',   tagClass: 'tag-url' },
+    useragent: { label: 'User-Agent Strings', icon: '◎', tag: 'UA',    tagClass: 'tag-ua' },
+    file:      { label: 'File Artifacts',     icon: '▣', tag: 'FILE',  tagClass: 'tag-file' },
+    process:   { label: 'Process Indicators', icon: '◈', tag: 'PROC',  tagClass: 'tag-process' },
+    logic:     { label: 'Detection Logic',    icon: '◆', tag: 'LOGIC', tagClass: 'tag-logic' },
+    reference: { label: 'References',         icon: '▷', tag: 'REF',   tagClass: 'tag-ref' },
+    other:     { label: 'Other',              icon: '○', tag: 'INFO',  tagClass: 'tag-other' }
+  };
+
+  function linkifyUrls(text) {
+    return text.replace(/(https?:\/\/[^\s<>]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderDetectionItem(d) {
+    const meta = TYPE_META[d.type];
+    const tagHtml = `<span class="det-tag ${meta.tagClass}">${meta.tag}</span>`;
+    const toolHtml = d.tool ? `<span class="det-tool">${d.tool}</span>` : '';
+    if (d.type === 'network') {
+      return `<div class="detection-item">${tagHtml}${toolHtml}<span class="det-value">${renderMethodPill(d.method)}${linkifyUrls(escapeHtml(d.value))}</span></div>`;
+    }
+    if (d.type === 'reference') {
+      return `<div class="detection-item">${tagHtml}${toolHtml}<span class="det-text">${linkifyUrls(escapeHtml(d.value))}</span></div>`;
+    }
+    if (d.type === 'logic' || d.type === 'other') {
+      return `<div class="detection-item">${tagHtml}${toolHtml}<span class="det-text">${linkifyUrls(escapeHtml(d.value))}</span></div>`;
+    }
+    return `<div class="detection-item">${tagHtml}${toolHtml}<span class="det-value">${linkifyUrls(escapeHtml(d.value))}</span></div>`;
+  }
+
+  function buildDetectionSection(detections) {
+    const classified = detections.map(classifyDetection);
+    const typeOrder = ['network','useragent','file','process','logic','reference','other'];
+    const groups = {};
+    typeOrder.forEach(t => { groups[t] = []; });
+    classified.forEach(d => { groups[d.type].push(d); });
+    let html = '';
+    typeOrder.forEach(type => {
+      if (!groups[type].length) return;
+      const meta = TYPE_META[type];
+      html += `<div class="detection-group">`;
+      html += `<div class="detection-group-title">${meta.icon} ${meta.label} (${groups[type].length})</div>`;
+      groups[type].forEach(d => { html += renderDetectionItem(d); });
+      html += `</div>`;
+    });
+    return html;
+  }
+
+  /* ═══════════════ SLUG / ROUTING ═══════════════ */
+  function toSlug(name) { return encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-')); }
+  let slugToName = {};
+  function buildSlugMap(services) {
+    slugToName = {};
+    services.forEach(name => { slugToName[toSlug(name)] = name; });
+  }
+
+  /* ═══════════════ FALLBACK ICON ═══════════════ */
+  function createFallbackIcon(name, cls) {
+    const div = document.createElement('div');
+    div.className = cls || 'fallback-icon';
+    const words = name.trim().split(/\s+/);
+    div.textContent = words.length > 1 ? (words[0][0] + words[1][0]) : name.substring(0, 2);
+    return div;
+  }
+
+  function iconEl(service, imgClass, fbClass, size) {
+    const src = serviceIcons[service];
+    if (src) {
+      const img = document.createElement('img');
+      img.src = src; img.alt = service;
+      if (imgClass) img.className = imgClass;
+      img.style.width = size||''; img.style.height = size||'';
+      img.onerror = function() {
+        this.style.display = 'none';
+        this.parentNode.appendChild(createFallbackIcon(service, fbClass));
+      };
+      return img;
+    }
+    return createFallbackIcon(service, fbClass);
+  }
+
+  /* ═══════════════ LOAD DATA ═══════════════ */
+  function loadC2Data() {
+    fetch(`c2_data.json?t=${Date.now()}`, { cache: 'no-store' })
+      .then(r => r.json())
+      .then(data => {
+        c2Data = data;
+        const services = Object.keys(data);
+        buildSlugMap(services);
+
+        // compute global stats
+        let totalProjects = 0, totalRules = 0;
+        services.forEach(s => {
+          totalProjects += (data[s].c2Projects || []).length;
+          totalRules += (data[s].detection || []).length;
+        });
+        document.getElementById('hstatServices').textContent = services.length;
+        document.getElementById('hstatProjects').textContent = totalProjects;
+        document.getElementById('hstatRules').textContent = totalRules;
+        document.getElementById('tileCount').textContent = services.length;
+
+        buildSidebar(services);
+        buildTiles(services);
+        handleHashRoute();
+      })
+      .catch(err => console.error('Error loading c2_data.json:', err));
+  }
+
+  /* ═══════════════ SIDEBAR ═══════════════ */
+  function buildSidebar(services) {
+    const list = document.getElementById('sidebarList');
+    services.forEach(service => {
+      const item = document.createElement('div');
+      item.className = 'sidebar-item';
+      item.setAttribute('data-service', service);
+      item.setAttribute('data-search', service.toLowerCase());
+
+      const iconWrap = document.createElement('div');
+      iconWrap.className = 'sidebar-icon';
+      const src = serviceIcons[service];
+      if (src) {
+        const img = document.createElement('img');
+        img.src = src; img.alt = service;
+        img.onerror = function() {
+          this.style.display = 'none';
+          const fb = document.createElement('span');
+          fb.className = 'sidebar-icon-fb';
+          const w = service.trim().split(/\s+/);
+          fb.textContent = w.length > 1 ? (w[0][0]+w[1][0]) : service.substring(0,2);
+          iconWrap.appendChild(fb);
+        };
+        iconWrap.appendChild(img);
+      } else {
+        const fb = document.createElement('span');
+        fb.className = 'sidebar-icon-fb';
+        const w = service.trim().split(/\s+/);
+        fb.textContent = w.length > 1 ? (w[0][0]+w[1][0]) : service.substring(0,2);
+        iconWrap.appendChild(fb);
+      }
+
+      const label = document.createElement('div');
+      label.className = 'sidebar-label';
+      label.textContent = service;
+
+      const info = c2Data[service];
+      const count = (info && info.c2Projects) ? info.c2Projects.length : 0;
+      const cnt = document.createElement('div');
+      cnt.className = 'sidebar-count';
+      cnt.textContent = count;
+
+      item.appendChild(iconWrap);
+      item.appendChild(label);
+      item.appendChild(cnt);
+      item.addEventListener('click', () => { window.location.hash = toSlug(service); });
+      list.appendChild(item);
+    });
+  }
+
+  /* ═══════════════ TILES ═══════════════ */
+  function buildTiles(services) {
+    const grid = document.getElementById('tileGrid');
+    services.forEach(service => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.setAttribute('data-service', service);
+      tile.setAttribute('data-search', service.toLowerCase());
+
+      const src = serviceIcons[service];
+      if (src) {
+        const img = document.createElement('img');
+        img.src = src; img.alt = service; img.loading = 'lazy';
+        img.onerror = function() {
+          this.style.display = 'none';
+          tile.insertBefore(createFallbackIcon(service, 'fallback-icon'), this);
+        };
+        tile.appendChild(img);
+      } else {
+        tile.appendChild(createFallbackIcon(service, 'fallback-icon'));
+      }
+
+      const label = document.createElement('div');
+      label.className = 'tile-text';
+      label.textContent = service;
+      tile.appendChild(label);
+
+      tile.addEventListener('click', () => { window.location.hash = toSlug(service); });
+      grid.appendChild(tile);
+    });
+  }
+
+  /* ═══════════════ SEARCH / FILTER ═══════════════ */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('searchInput').addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      document.querySelectorAll('.tile, .sidebar-item').forEach(el => {
+        el.classList.toggle('hidden', q && !el.getAttribute('data-search').includes(q));
+      });
+    });
+  });
+
+  /* ═══════════════ ROUTING ═══════════════ */
+  function handleHashRoute() {
+    const hash = window.location.hash.slice(1);
+    if (!hash) { goBackSilent(); return; }
+    const decoded = decodeURIComponent(hash);
+    if (slugToName[decoded]) { showDetail(slugToName[decoded]); return; }
+    const lower = decoded.toLowerCase();
+    for (const [slug, name] of Object.entries(slugToName)) {
+      if (slug.toLowerCase() === lower) { showDetail(name); return; }
+    }
+    goBackSilent();
+  }
+
+  window.addEventListener('hashchange', handleHashRoute);
+
+  /* ═══════════════ DETAIL VIEW ═══════════════ */
+  let currentService = null;
+
+  async function showDetail(serviceName) {
+    currentService = serviceName;
+    document.getElementById('homePanel').style.display = 'none';
+    document.getElementById('detailPanel').style.display = 'block';
+
+    // sidebar highlight
+    document.querySelectorAll('.sidebar-item').forEach(el => {
+      el.classList.toggle('active', el.getAttribute('data-service') === serviceName);
+    });
+    // scroll sidebar item into view
+    const activeItem = document.querySelector('.sidebar-item.active');
+    if (activeItem) activeItem.scrollIntoView({ block: 'nearest' });
+
+    // Header icon
+    const iconCont = document.getElementById('detailIconContainer');
+    iconCont.innerHTML = '';
+    const src = serviceIcons[serviceName];
+    if (src) {
+      const img = document.createElement('img');
+      img.src = src; img.alt = serviceName;
+      img.style.width = '32px'; img.style.height = '32px'; img.style.objectFit = 'contain';
+      img.onerror = function() {
+        this.style.display = 'none';
+        const fb = document.createElement('div');
+        fb.className = 'detail-header-fb';
+        const w = serviceName.trim().split(/\s+/);
+        fb.textContent = w.length > 1 ? (w[0][0]+w[1][0]) : serviceName.substring(0,2);
+        iconCont.appendChild(fb);
+      };
+      iconCont.appendChild(img);
+    } else {
+      const fb = document.createElement('div');
+      fb.className = 'detail-header-fb';
+      const w = serviceName.trim().split(/\s+/);
+      fb.textContent = w.length > 1 ? (w[0][0]+w[1][0]) : serviceName.substring(0,2);
+      iconCont.appendChild(fb);
+    }
+
+    document.getElementById('detailTitle').textContent = serviceName;
+
+    const info = c2Data[serviceName];
+    if (!info) return;
+    document.title = serviceName + ' — XHYVC2';
+
+    const projectCount = (info.c2Projects || []).length;
+    const detectionCount = (info.detection || []).length;
+    const classified = (info.detection || []).map(classifyDetection);
+    const urlCount = classified.filter(d => d.type === 'network').length;
+    const uaCount = classified.filter(d => d.type === 'useragent').length;
+    const logicCount = classified.filter(d => d.type === 'logic').length;
+
+    document.getElementById('detailSubtitle').textContent =
+      `${projectCount} c2 project${projectCount!==1?'s':''} · ${detectionCount} detection rule${detectionCount!==1?'s':''}`;
+
+    // Stats row
+    let statsHtml = `
+      <div class="stat-card"><span class="sicon">▣</span><div><span class="snum">${projectCount}</span><div class="slabel">C2 Projects</div></div></div>
+      <div class="stat-card"><span class="sicon">◎</span><div><span class="snum">${detectionCount}</span><div class="slabel">Detection Rules</div></div></div>`;
+    if (urlCount > 0) statsHtml += `<div class="stat-card"><span class="sicon">⬡</span><div><span class="snum">${urlCount}</span><div class="slabel">Network IOCs</div></div></div>`;
+    if (uaCount > 0)  statsHtml += `<div class="stat-card"><span class="sicon">◎</span><div><span class="snum">${uaCount}</span><div class="slabel">User-Agents</div></div></div>`;
+    if (logicCount > 0) statsHtml += `<div class="stat-card"><span class="sicon">◆</span><div><span class="snum">${logicCount}</span><div class="slabel">Logic Rules</div></div></div>`;
+    document.getElementById('statsRow').innerHTML = statsHtml;
+
+    // Projects section
+    let projectsHtml = `<div class="section-card">
+      <div class="section-header" id="sec-projects" onclick="toggleSection('sec-projects')">
+        <span class="sec-label">▣ C2 Projects</span>
+        <span class="sec-count">${projectCount}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">`;
+    (info.c2Projects || []).forEach(url => {
+      projectsHtml += `<div class="project-item">
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>
+      </div>`;
+    });
+    projectsHtml += `</div></div>`;
+
+    // Detection section
+    let detHtml = `<div class="section-card">
+      <div class="section-header" id="sec-detection" onclick="toggleSection('sec-detection')">
+        <span class="sec-label">◎ Detection Indicators</span>
+        <span class="sec-count">${detectionCount}</span>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="section-body">`;
+    detHtml += buildDetectionSection(info.detection || []);
+    detHtml += `</div></div>`;
+
+    document.getElementById('detailContent').innerHTML = projectsHtml + detHtml + '<div id="descTarget"></div>';
+
+    // Description (async)
+    const descTarget = document.getElementById('descTarget');
+    let mdText = null;
+    if (info.descriptionUrl) {
+      try {
+        const r = await fetch(info.descriptionUrl);
+        if (r.ok) mdText = await r.text();
+      } catch(e) {}
+    } else if (info.description) {
+      mdText = info.description;
+    }
+    if (mdText) {
+      const descHtml = marked.parse(mdText);
+      descTarget.innerHTML = `<div class="section-card">
+        <div class="section-header" id="sec-desc" onclick="toggleSection('sec-desc')">
+          <span class="sec-label">▷ Description &amp; Analysis</span>
+          <span class="chevron">▾</span>
+        </div>
+        <div class="section-body"><div class="desc-section">${descHtml}</div></div>
+      </div>`;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function toggleSection(id) {
+    const h = document.getElementById(id);
+    const b = h.nextElementSibling;
+    h.classList.toggle('collapsed');
+    b.classList.toggle('collapsed');
+  }
+
+  function goBack() { window.location.hash = ''; }
+  function goBackSilent() {
+    currentService = null;
+    document.title = 'XHYVC2 — Living off the Land C2';
+    document.getElementById('homePanel').style.display = 'block';
+    document.getElementById('detailPanel').style.display = 'none';
+    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  }
+
+  function copyShareLink() {
+    if (!currentService) return;
+    const url = window.location.origin + window.location.pathname + '#' + toSlug(currentService);
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.querySelector('.copy-link-btn');
+      btn.innerHTML = '✓ copied'; btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = '&#128279; copy link'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+    });
+  }
+
+  marked.setOptions({ gfm: true, breaks: true });
+  loadC2Data();
+</script>
+</body>
+</html>
